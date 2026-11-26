@@ -1,0 +1,284 @@
+:root {
+  color-scheme: light dark;
+  --bg: #efe7dc;
+  --ink: #1d1b19;
+  --ink-2: #5b554d;
+  --accent: #d8452e;
+  --ok: #2b7a4b;
+  --err: #b3261e;
+  --glass: rgb(255 255 255 / 0.36);
+  --glass-hover: rgb(255 255 255 / 0.5);
+  --edge: rgb(255 255 255 / 0.75);
+  --edge-soft: rgb(255 255 255 / 0.35);
+  --shadow: rgb(70 45 20 / 0.18);
+  --blob-1: #ff9a76;
+  --blob-2: #86b9ff;
+  --blob-3: #ffd16e;
+  --track: rgb(0 0 0 / 0.1);
+  font-family: ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16130f;
+    --ink: #f4efe8;
+    --ink-2: #b9b1a6;
+    --accent: #ff7a5c;
+    --ok: #6fcf97;
+    --err: #ff8a80;
+    --glass: rgb(255 255 255 / 0.08);
+    --glass-hover: rgb(255 255 255 / 0.14);
+    --edge: rgb(255 255 255 / 0.28);
+    --edge-soft: rgb(255 255 255 / 0.12);
+    --shadow: rgb(0 0 0 / 0.5);
+    --blob-1: #8a3a25;
+    --blob-2: #24467a;
+    --blob-3: #7a5d1e;
+    --track: rgb(255 255 255 / 0.14);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.5;
+  display: grid;
+  align-content: start;
+  gap: 20px;
+  width: min(640px, 100% - 32px);
+  margin-inline: auto;
+  padding-block: 40px 32px;
+}
+
+/* Shapes behind the glass so it has something to refract */
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.bg i {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.85;
+}
+.bg i:nth-child(1) { width: 320px; height: 320px; background: var(--blob-1); top: 150px; left: calc(50% - 400px); }
+.bg i:nth-child(2) { width: 380px; height: 380px; background: var(--blob-2); top: 260px; left: calc(50% + 90px); }
+.bg i:nth-child(3) { width: 240px; height: 240px; background: var(--blob-3); top: 30px; left: calc(50% + 60px); }
+
+.hero h1 {
+  margin: 0 0 8px;
+  font-size: clamp(2rem, 6vw, 2.75rem);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.hero p {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 1.05rem;
+}
+
+.glass {
+  position: relative;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid var(--edge-soft);
+  border-radius: 28px;
+  box-shadow:
+    inset 0 1px 0 var(--edge),
+    inset 0 -1px 0 var(--edge-soft),
+    0 12px 32px var(--shadow);
+}
+/* specular sheen along the top edge */
+.glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.35), transparent 35%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* App */
+#root {
+  display: grid;
+  gap: 14px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.drop {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 6px;
+  min-height: 280px;
+  padding: 32px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.drop:hover,
+.drop[data-dragging='true'] {
+  background: var(--glass-hover);
+  transform: translateY(-2px);
+}
+.drop:focus-within {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+.drop svg {
+  width: 56px;
+  height: 56px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.drop strong {
+  font-size: 1.35rem;
+}
+.drop small {
+  color: var(--ink-2);
+  font-size: 0.95rem;
+}
+
+.link {
+  justify-self: start;
+  background: none;
+  border: 0;
+  padding: 4px 2px;
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.link:hover {
+  color: var(--ink);
+}
+
+.files {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.file {
+  border-radius: 20px;
+  padding: 14px 18px;
+  display: grid;
+  gap: 8px;
+}
+.file-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+.file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.file-status {
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.file[data-status='done'] .file-status { color: var(--ok); font-weight: 600; }
+.file[data-status='error'] .file-status { color: var(--err); font-weight: 600; }
+
+.bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--track);
+  overflow: hidden;
+}
+.bar div {
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+  transition: width 0.25s ease;
+}
+.file-error {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--err);
+}
+.file-error small {
+  display: block;
+  color: var(--ink-2);
+}
+
+.notice {
+  padding: 20px 24px;
+  border-radius: 20px;
+}
+
+/* Static info section */
+.info {
+  padding: 28px;
+}
+.info h2 {
+  margin: 0 0 10px;
+  font-size: 1.25rem;
+}
+.info h2:not(:first-child) {
+  margin-top: 28px;
+}
+.info p,
+.info li {
+  color: var(--ink-2);
+}
+.info p {
+  margin: 0 0 12px;
+}
+.info ol {
+  margin: 0;
+  padding-left: 22px;
+  display: grid;
+  gap: 6px;
+}
+details {
+  border-top: 1px solid var(--edge-soft);
+  padding: 12px 0;
+}
+summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+details p {
+  margin: 8px 0 0;
+}
+
+.foot {
+  text-align: center;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
